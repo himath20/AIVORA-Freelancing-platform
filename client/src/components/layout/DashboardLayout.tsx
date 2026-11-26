@@ -13,7 +13,7 @@ interface DashboardLayoutProps {
 
 export function DashboardLayout({ children, variant }: DashboardLayoutProps) {
   return (
-    <div className="flex min-h-screen bg-[#f7f8fc]">
+    <div className="flex min-h-screen bg-white">
       <Sidebar variant={variant} />
       <div className="flex-1 ml-60 flex flex-col min-h-screen">
         <Header />

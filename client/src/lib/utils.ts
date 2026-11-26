@@ -45,7 +45,7 @@ export function getStatusColor(status: string): string {
     active: "bg-blue-100 text-blue-700",
     paused: "bg-orange-100 text-orange-700",
     failed: "bg-red-100 text-red-700",
-    refunded: "bg-purple-100 text-purple-700",
+    refunded: "bg-violet-100 text-violet-700",
     investigating: "bg-orange-100 text-orange-700",
     resolved: "bg-green-100 text-green-700",
     dismissed: "bg-gray-100 text-gray-600",

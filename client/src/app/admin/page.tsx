@@ -40,7 +40,7 @@ export default function AdminDashboard() {
               <XAxis dataKey="month" tick={{ fontSize: 12, fill: "#9ca3af" }} axisLine={false} tickLine={false} />
               <YAxis tick={{ fontSize: 12, fill: "#9ca3af" }} axisLine={false} tickLine={false} />
               <Tooltip contentStyle={{ borderRadius: "12px", border: "1px solid #e5e7eb" }} />
-              <Line type="monotone" dataKey="value" stroke="#7c3aed" strokeWidth={2.5} dot={{ r: 4, fill: "#7c3aed" }} />
+              <Line type="monotone" dataKey="value" stroke="#003135" strokeWidth={2.5} dot={{ r: 4, fill: "#003135" }} />
             </LineChart>
           </ResponsiveContainer>
         </div>

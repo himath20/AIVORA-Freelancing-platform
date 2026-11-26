@@ -54,7 +54,7 @@ export default function ManagerFreelancersPage() {
             <XAxis dataKey="name" tick={{ fontSize: 12, fill: "#9ca3af" }} axisLine={false} tickLine={false} />
             <YAxis tick={{ fontSize: 12, fill: "#9ca3af" }} axisLine={false} tickLine={false} tickFormatter={(v) => `$${v / 1000}k`} />
             <Tooltip formatter={(v: number) => [formatCurrency(v), "Earnings"]} contentStyle={{ borderRadius: "12px", border: "1px solid #e5e7eb" }} />
-            <Bar dataKey="earnings" fill="#7c3aed" radius={[6, 6, 0, 0]} />
+            <Bar dataKey="earnings" fill="#003135" radius={[6, 6, 0, 0]} />
           </BarChart>
         </ResponsiveContainer>
       </div>

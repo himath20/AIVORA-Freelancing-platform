@@ -20,13 +20,13 @@ export default function ManagerAnalyticsPage() {
     { name: "NLP", value: 12 },
     { name: "MLOps", value: 10 },
   ];
-  const COLORS = ["#7c3aed", "#6d28d9", "#8b5cf6", "#a78bfa", "#c4b5fd"];
+  const COLORS = ["#003135", "#004d54", "#14757d", "#479fa6", "#7fbfc4"];
 
   return (
     <DashboardLayout variant="manager">
-      <div className="relative bg-gradient-to-r from-gray-900 to-gray-800 rounded-2xl p-6 mb-8">
+      <div className="relative bg-gradient-to-r from-[#003135] to-[#004d54] rounded-2xl p-6 mb-8">
         <h1 className="text-2xl font-bold text-white mb-1">Analytics Dashboard</h1>
-        <p className="text-gray-400 text-sm">Platform performance & strategic insights</p>
+        <p className="text-violet-200 text-sm">Platform performance & strategic insights</p>
       </div>
 
       <div className="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-5 mb-8">
@@ -34,7 +34,7 @@ export default function ManagerAnalyticsPage() {
         <StatCard label="Total Projects" value={String(projects.length)} change="+22%" positive icon={<FolderKanban className="w-5 h-5 text-blue-600" />} iconBg="bg-blue-100" />
         <StatCard label="Freelancers" value={String(freelancers.length)} change="+5%" positive icon={<Users className="w-5 h-5 text-violet-600" />} iconBg="bg-violet-100" />
         <StatCard label="Clients" value={String(clients.length)} change="+3%" positive icon={<Building2 className="w-5 h-5 text-orange-600" />} iconBg="bg-orange-100" />
-        <StatCard label="AI Services" value={String(aiServices.length)} change="+12%" positive icon={<Zap className="w-5 h-5 text-purple-600" />} iconBg="bg-purple-100" />
+        <StatCard label="AI Services" value={String(aiServices.length)} change="+12%" positive icon={<Zap className="w-5 h-5 text-violet-600" />} iconBg="bg-violet-100" />
         <StatCard label="Conversion" value="68%" change="+4%" positive icon={<TrendingUp className="w-5 h-5 text-green-600" />} iconBg="bg-green-100" />
       </div>
 
@@ -46,8 +46,8 @@ export default function ManagerAnalyticsPage() {
             <AreaChart data={revenueChartData}>
               <defs>
                 <linearGradient id="rev" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="5%" stopColor="#7c3aed" stopOpacity={0.15} />
-                  <stop offset="95%" stopColor="#7c3aed" stopOpacity={0} />
+                  <stop offset="5%" stopColor="#003135" stopOpacity={0.15} />
+                  <stop offset="95%" stopColor="#003135" stopOpacity={0} />
                 </linearGradient>
                 <linearGradient id="pay" x1="0" y1="0" x2="0" y2="1">
                   <stop offset="5%" stopColor="#10b981" stopOpacity={0.15} />
@@ -59,7 +59,7 @@ export default function ManagerAnalyticsPage() {
               <YAxis tick={{ fontSize: 12, fill: "#9ca3af" }} axisLine={false} tickLine={false} tickFormatter={(v) => `$${v / 1000}k`} />
               <Tooltip formatter={(v: number) => [formatCurrency(v)]} contentStyle={{ borderRadius: "12px", border: "1px solid #e5e7eb" }} />
               <Legend />
-              <Area type="monotone" dataKey="value" name="Gross Revenue" stroke="#7c3aed" strokeWidth={2.5} fill="url(#rev)" />
+              <Area type="monotone" dataKey="value" name="Gross Revenue" stroke="#003135" strokeWidth={2.5} fill="url(#rev)" />
               <Area type="monotone" dataKey="secondary" name="Payouts" stroke="#10b981" strokeWidth={2.5} fill="url(#pay)" />
             </AreaChart>
           </ResponsiveContainer>
@@ -99,7 +99,7 @@ export default function ManagerAnalyticsPage() {
             <XAxis dataKey="month" tick={{ fontSize: 12, fill: "#9ca3af" }} axisLine={false} tickLine={false} />
             <YAxis tick={{ fontSize: 12, fill: "#9ca3af" }} axisLine={false} tickLine={false} />
             <Tooltip contentStyle={{ borderRadius: "12px", border: "1px solid #e5e7eb" }} />
-            <Bar dataKey="value" name="Projects" fill="#7c3aed" radius={[6, 6, 0, 0]} />
+            <Bar dataKey="value" name="Projects" fill="#003135" radius={[6, 6, 0, 0]} />
           </BarChart>
         </ResponsiveContainer>
       </div>

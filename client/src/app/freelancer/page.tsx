@@ -27,21 +27,21 @@ export default function FreelancerDashboard() {
 
   return (
     <DashboardLayout variant="freelancer">
-      {/* Welcome banner matching reference light lavender aesthetic */}
-      <div className="relative min-h-[154px] bg-gradient-to-r from-[#f1efff] via-[#eceaff] to-[#dedcff] border border-violet-100/80 rounded-2xl px-7 py-8 mb-7 overflow-hidden">
+      {/* Welcome banner */}
+      <div className="relative min-h-[154px] bg-gradient-to-r from-white via-violet-50 to-violet-100 border border-violet-200/80 rounded-2xl px-7 py-8 mb-7 overflow-hidden">
         <div className="absolute inset-y-0 right-0 w-[48%] overflow-hidden pointer-events-none">
           <div className="absolute -right-12 -bottom-20 w-72 h-72 rounded-full border-[38px] border-violet-300/30" />
-          <div className="absolute right-36 top-10 w-14 h-14 rounded-2xl bg-gradient-to-br from-violet-600 to-indigo-600 rotate-12 shadow-xl shadow-violet-300/50 flex items-center justify-center">
+          <div className="absolute right-36 top-10 w-14 h-14 rounded-2xl bg-gradient-to-br from-[#003135] to-[#14757d] rotate-12 shadow-xl shadow-violet-300/50 flex items-center justify-center">
             <Cpu className="w-7 h-7 text-white" />
           </div>
-          <div className="absolute right-14 top-1/2 -translate-y-1/2 w-32 h-32 rounded-[42%_58%_56%_44%] bg-gradient-to-br from-violet-400 to-indigo-700 shadow-2xl shadow-violet-300/40 flex items-center justify-center">
+          <div className="absolute right-14 top-1/2 -translate-y-1/2 w-32 h-32 rounded-[42%_58%_56%_44%] bg-gradient-to-br from-[#14757d] to-[#003135] shadow-2xl shadow-violet-300/40 flex items-center justify-center">
             <Sparkles className="w-12 h-12 text-white/90" />
           </div>
           <div className="absolute right-52 top-16 w-2 h-2 rounded-full bg-white shadow-[22px_18px_0_white,44px_-8px_0_rgba(255,255,255,.8)]" />
         </div>
         <div className="relative z-10 max-w-xl">
-          <h1 className="text-[28px] md:text-[32px] font-bold text-[#20263a] mb-1.5">Welcome back, Alex! <span className="text-3xl">👋</span></h1>
-          <p className="text-[#667085] text-base">Here&apos;s your latest activity and opportunities.</p>
+          <h1 className="text-[28px] md:text-[32px] font-bold text-[#003135] mb-1.5">Welcome back, Alex! <span className="text-3xl">👋</span></h1>
+          <p className="text-gray-600 text-base">Here&apos;s your latest activity and opportunities.</p>
         </div>
       </div>
 
@@ -49,7 +49,7 @@ export default function FreelancerDashboard() {
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 mb-8">
         <StatCard label="Total Earnings" value="$12,450" change="+12%" positive icon={<DollarSign className="w-5 h-5 text-violet-600" />} iconBg="bg-violet-100" />
         <StatCard label="Active Projects" value="4" change="+1 new" positive icon={<Briefcase className="w-5 h-5 text-blue-600" />} iconBg="bg-blue-100" />
-        <StatCard label="Proposals Sent" value="18" change="+20%" positive icon={<FileText className="w-5 h-5 text-purple-600" />} iconBg="bg-purple-100" />
+        <StatCard label="Proposals Sent" value="18" change="+20%" positive icon={<FileText className="w-5 h-5 text-violet-600" />} iconBg="bg-violet-100" />
         <StatCard label="Rating" value="4.9" change="+0.1" positive icon={<Star className="w-5 h-5 text-emerald-600" />} iconBg="bg-emerald-100" />
       </div>
 
@@ -71,15 +71,15 @@ export default function FreelancerDashboard() {
             <AreaChart data={earningsChartData}>
               <defs>
                 <linearGradient id="earnings" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="5%" stopColor="#7c3aed" stopOpacity={0.2} />
-                  <stop offset="95%" stopColor="#7c3aed" stopOpacity={0} />
+                  <stop offset="5%" stopColor="#003135" stopOpacity={0.2} />
+                  <stop offset="95%" stopColor="#003135" stopOpacity={0} />
                 </linearGradient>
               </defs>
               <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
               <XAxis dataKey="month" tick={{ fontSize: 12, fill: "#9ca3af" }} axisLine={false} tickLine={false} />
               <YAxis tick={{ fontSize: 12, fill: "#9ca3af" }} axisLine={false} tickLine={false} tickFormatter={(v) => `$${v / 1000}k`} />
               <Tooltip formatter={(v: number) => [formatCurrency(v), "Earnings"]} contentStyle={{ borderRadius: "12px", border: "1px solid #e5e7eb" }} />
-              <Area type="monotone" dataKey="value" stroke="#7c3aed" strokeWidth={2.5} fill="url(#earnings)" dot={{ fill: "#7c3aed", strokeWidth: 2, r: 4 }} />
+              <Area type="monotone" dataKey="value" stroke="#003135" strokeWidth={2.5} fill="url(#earnings)" dot={{ fill: "#003135", strokeWidth: 2, r: 4 }} />
             </AreaChart>
           </ResponsiveContainer>
         </div>

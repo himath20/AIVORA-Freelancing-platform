@@ -49,8 +49,8 @@ export default function ManagerRevenuePage() {
           <AreaChart data={monthlyBreakdown}>
             <defs>
               <linearGradient id="rev2" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="5%" stopColor="#7c3aed" stopOpacity={0.15} />
-                <stop offset="95%" stopColor="#7c3aed" stopOpacity={0} />
+                <stop offset="5%" stopColor="#003135" stopOpacity={0.15} />
+                <stop offset="95%" stopColor="#003135" stopOpacity={0} />
               </linearGradient>
               <linearGradient id="payout2" x1="0" y1="0" x2="0" y2="1">
                 <stop offset="5%" stopColor="#10b981" stopOpacity={0.15} />
@@ -62,7 +62,7 @@ export default function ManagerRevenuePage() {
             <YAxis tick={{ fontSize: 12, fill: "#9ca3af" }} axisLine={false} tickLine={false} tickFormatter={(v) => `$${v / 1000}k`} />
             <Tooltip formatter={(v: number) => [formatCurrency(v)]} contentStyle={{ borderRadius: "12px", border: "1px solid #e5e7eb" }} />
             <Legend />
-            <Area type="monotone" dataKey="revenue" name="Revenue" stroke="#7c3aed" strokeWidth={2.5} fill="url(#rev2)" />
+            <Area type="monotone" dataKey="revenue" name="Revenue" stroke="#003135" strokeWidth={2.5} fill="url(#rev2)" />
             <Area type="monotone" dataKey="payouts" name="Payouts" stroke="#10b981" strokeWidth={2.5} fill="url(#payout2)" />
           </AreaChart>
         </ResponsiveContainer>
@@ -76,7 +76,7 @@ export default function ManagerRevenuePage() {
             <XAxis dataKey="month" tick={{ fontSize: 12, fill: "#9ca3af" }} axisLine={false} tickLine={false} />
             <YAxis tick={{ fontSize: 12, fill: "#9ca3af" }} axisLine={false} tickLine={false} tickFormatter={(v) => `$${v}`} />
             <Tooltip formatter={(v: number) => [formatCurrency(v), "Platform Fee"]} contentStyle={{ borderRadius: "12px", border: "1px solid #e5e7eb" }} />
-            <Bar dataKey="fee" fill="#a78bfa" radius={[6, 6, 0, 0]} />
+            <Bar dataKey="fee" fill="#479fa6" radius={[6, 6, 0, 0]} />
           </BarChart>
         </ResponsiveContainer>
       </div>

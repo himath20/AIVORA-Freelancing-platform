@@ -22,7 +22,7 @@ export default function ClientDashboard() {
 
   return (
     <DashboardLayout variant="client">
-      <div className="relative bg-gradient-to-r from-violet-600 via-violet-500 to-purple-500 rounded-2xl p-6 mb-8">
+      <div className="relative bg-gradient-to-r from-[#003135] via-[#00454a] to-[#14757d] rounded-2xl p-6 mb-8">
         <h1 className="text-2xl font-bold text-white mb-1">Welcome, TechCorp Ltd. 🏢</h1>
         <p className="text-violet-200 text-sm">Manage your AI projects and find top talent</p>
       </div>
@@ -43,7 +43,7 @@ export default function ClientDashboard() {
               <XAxis dataKey="month" tick={{ fontSize: 12, fill: "#9ca3af" }} axisLine={false} tickLine={false} />
               <YAxis tick={{ fontSize: 12, fill: "#9ca3af" }} axisLine={false} tickLine={false} tickFormatter={(v) => `$${v / 1000}k`} />
               <Tooltip formatter={(v: number) => [formatCurrency(v), "Spending"]} contentStyle={{ borderRadius: "12px", border: "1px solid #e5e7eb" }} />
-              <Bar dataKey="secondary" fill="#7c3aed" radius={[6, 6, 0, 0]} />
+              <Bar dataKey="secondary" fill="#003135" radius={[6, 6, 0, 0]} />
             </BarChart>
           </ResponsiveContainer>
         </div>

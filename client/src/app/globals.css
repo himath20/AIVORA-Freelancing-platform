@@ -9,17 +9,17 @@
   }
   body {
     font-family: 'Inter', system-ui, sans-serif;
-    @apply bg-gray-50 text-gray-900 antialiased;
+    @apply bg-white text-gray-900 antialiased;
   }
 }
 
 @layer components {
   .nexora-card {
-    @apply bg-white rounded-2xl border border-gray-100/90;
-    box-shadow: 0 4px 18px rgba(31, 41, 55, 0.045);
+    @apply bg-white rounded-2xl border border-gray-200/80;
+    box-shadow: 0 4px 18px rgba(0, 49, 53, 0.05);
   }
   .nexora-card:hover {
-    box-shadow: 0 8px 24px rgba(31, 41, 55, 0.065);
+    box-shadow: 0 8px 24px rgba(0, 49, 53, 0.08);
   }
   .nexora-btn-primary {
     @apply bg-violet-600 hover:bg-violet-700 text-white font-medium px-5 py-2.5 rounded-xl transition-all duration-200 shadow-sm hover:shadow-md active:scale-95;

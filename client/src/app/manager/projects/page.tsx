@@ -44,7 +44,7 @@ export default function ManagerProjectsPage() {
             <XAxis dataKey="month" tick={{ fontSize: 12, fill: "#9ca3af" }} axisLine={false} tickLine={false} />
             <YAxis tick={{ fontSize: 12, fill: "#9ca3af" }} axisLine={false} tickLine={false} />
             <Tooltip contentStyle={{ borderRadius: "12px", border: "1px solid #e5e7eb" }} />
-            <Bar dataKey="value" fill="#7c3aed" radius={[6, 6, 0, 0]} />
+            <Bar dataKey="value" fill="#003135" radius={[6, 6, 0, 0]} />
           </BarChart>
         </ResponsiveContainer>
       </div>

@@ -1,70 +1,387 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { DashboardLayout } from "@/components/layout/DashboardLayout";
 import { Card } from "@/components/ui/Card";
-import { StatusBadge } from "@/components/ui/StatusBadge";
-import { SearchBar } from "@/components/ui/SearchBar";
-import { DataTable } from "@/components/ui/DataTable";
-import { aiSkills } from "@/lib/data";
-import { Plus, Edit, Trash2 } from "lucide-react";
-import { Modal } from "@/components/ui/Modal";
-import { AISkill } from "@/types";
+import { apiRequest } from "@/lib/api";
+import {
+  Search,
+  RefreshCw,
+  Eye,
+  Edit,
+  X,
+  Loader2,
+  Layers,
+  Code,
+  Save,
+} from "lucide-react";
+
+interface AISkill {
+  skill_id: number;
+  skill_name: string;
+  category_id: number;
+  category_name: string;
+}
+
+interface Category {
+  category_id: number;
+  category_name: string;
+  description: string | null;
+}
 
 export default function AdminSkillsPage() {
-  const [query, setQuery] = useState("");
-  const [open, setOpen] = useState(false);
-  const filtered = aiSkills.filter((s) => s.name.toLowerCase().includes(query.toLowerCase()));
+  const [skills, setSkills] = useState<AISkill[]>([]);
+  const [categories, setCategories] = useState<Category[]>([]);
+  const [search, setSearch] = useState("");
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+  const [selectedSkill, setSelectedSkill] = useState<AISkill | null>(null);
+  const [editingSkill, setEditingSkill] = useState<AISkill | null>(null);
+  const [saving, setSaving] = useState(false);
 
-  const columns = [
-    { key: "name", header: "Skill", render: (r: AISkill) => <span className="font-medium text-gray-900">{r.name}</span> },
-    { key: "category", header: "Category", render: (r: AISkill) => <span className="text-xs bg-violet-100 text-violet-700 px-2 py-0.5 rounded-full">{r.category}</span> },
-    { key: "description", header: "Description", render: (r: AISkill) => <span className="text-xs text-gray-500 line-clamp-1">{r.description}</span> },
-    { key: "demandLevel", header: "Demand", render: (r: AISkill) => <StatusBadge status={r.demandLevel} /> },
-    { key: "avgRate", header: "Avg Rate", render: (r: AISkill) => <span className="font-semibold">${r.avgRate}/hr</span> },
-    {
-      key: "actions", header: "",
-      render: () => (
-        <div className="flex gap-2">
-          <button className="p-1.5 hover:bg-violet-100 rounded-lg text-violet-600"><Edit className="w-4 h-4" /></button>
-          <button className="p-1.5 hover:bg-red-100 rounded-lg text-red-500"><Trash2 className="w-4 h-4" /></button>
-        </div>
-      )
-    },
-  ];
+  const fetchData = async () => {
+    try {
+      setLoading(true);
+      setError("");
+
+      const token = localStorage.getItem("token");
+
+      if (!token) {
+        throw new Error("Please log in again.");
+      }
+
+      const [skillData, categoryData] = await Promise.all([
+        apiRequest<{ skills: AISkill[] }>("/api/admin/skills", { token }),
+        apiRequest<{ categories: Category[] }>("/api/categories", { token }),
+      ]);
+
+      setSkills(skillData.skills || []);
+      setCategories(categoryData.categories || []);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Unable to load skills.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchData();
+  }, []);
+
+  const filteredSkills = useMemo(() => {
+    const term = search.toLowerCase();
+
+    return skills.filter(
+      (skill) =>
+        skill.skill_name.toLowerCase().includes(term) ||
+        skill.category_name.toLowerCase().includes(term)
+    );
+  }, [skills, search]);
+
+  const saveSkill = async () => {
+    if (!editingSkill) return;
+
+    try {
+      setSaving(true);
+      setError("");
+
+      const token = localStorage.getItem("token");
+
+      if (!token) {
+        throw new Error("Please log in again.");
+      }
+
+      await apiRequest(`/api/admin/skills/${editingSkill.skill_id}`, {
+        method: "PUT",
+        token,
+        body: {
+          skill_name: editingSkill.skill_name,
+          category_id: editingSkill.category_id,
+        },
+      });
+
+      setEditingSkill(null);
+      await fetchData();
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Unable to update skill.");
+    } finally {
+      setSaving(false);
+    }
+  };
 
   return (
     <DashboardLayout variant="admin">
-      <div className="mb-8 flex items-center justify-between">
+      <div className="mb-8 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">AI Skills Management</h1>
-          <p className="text-gray-500 text-sm mt-1">Manage all available AI skill categories</p>
+          <h1 className="text-2xl font-bold text-gray-900">
+            AI Skills Management
+          </h1>
+          <p className="text-gray-500 text-sm mt-1">
+            View and manage AI skills and their categories.
+          </p>
         </div>
-        <button onClick={() => setOpen(true)} className="nexora-btn-primary flex items-center gap-2">
-          <Plus className="w-4 h-4" /> Add Skill
+
+        <button
+          onClick={fetchData}
+          disabled={loading}
+          className="flex items-center justify-center gap-2 px-4 py-2 rounded-lg border border-gray-200 bg-white hover:bg-gray-50 text-sm font-medium"
+        >
+          <RefreshCw className={`w-4 h-4 ${loading ? "animate-spin" : ""}`} />
+          Refresh
         </button>
       </div>
 
-      <Card>
-        <div className="flex items-center justify-between mb-5">
-          <h2 className="font-semibold text-gray-900">All Skills ({filtered.length})</h2>
-          <SearchBar placeholder="Search skills..." value={query} onChange={setQuery} className="w-72" />
+      {error && (
+        <div className="mb-5 rounded-lg bg-red-50 border border-red-200 p-3 text-sm text-red-700">
+          {error}
         </div>
-        <DataTable columns={columns} data={filtered as unknown as Record<string, unknown>[]} />
+      )}
+
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
+        <Card>
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-sm text-gray-500">Total Skills</p>
+              <h3 className="text-2xl font-bold mt-1">{skills.length}</h3>
+            </div>
+            <Code className="w-8 h-8 text-violet-500" />
+          </div>
+        </Card>
+
+        <Card>
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-sm text-gray-500">Skill Categories</p>
+              <h3 className="text-2xl font-bold mt-1">{categories.length}</h3>
+            </div>
+            <Layers className="w-8 h-8 text-blue-500" />
+          </div>
+        </Card>
+      </div>
+
+      <Card>
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-5">
+          <h2 className="font-semibold text-gray-900">
+            All Skills ({filteredSkills.length})
+          </h2>
+
+          <div className="relative">
+            <Search className="absolute left-3 top-2.5 w-4 h-4 text-gray-400" />
+            <input
+              type="text"
+              placeholder="Search skills or categories..."
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              className="w-full sm:w-72 pl-9 pr-3 py-2 border border-gray-200 rounded-lg text-sm outline-none focus:ring-2 focus:ring-violet-500"
+            />
+          </div>
+        </div>
+
+        {loading ? (
+          <div className="py-12 flex justify-center items-center gap-2 text-gray-500">
+            <Loader2 className="w-5 h-5 animate-spin" />
+            Loading skills...
+          </div>
+        ) : filteredSkills.length === 0 ? (
+          <div className="py-12 text-center text-gray-500">
+            No skills found.
+          </div>
+        ) : (
+          <div className="overflow-x-auto">
+            <table className="w-full text-left">
+              <thead>
+                <tr className="border-b border-gray-100 text-xs text-gray-500 uppercase">
+                  <th className="py-3 px-3">ID</th>
+                  <th className="py-3 px-3">Skill</th>
+                  <th className="py-3 px-3">Category</th>
+                  <th className="py-3 px-3">Actions</th>
+                </tr>
+              </thead>
+
+              <tbody>
+                {filteredSkills.map((skill) => (
+                  <tr
+                    key={skill.skill_id}
+                    className="border-b border-gray-50 hover:bg-gray-50"
+                  >
+                    <td className="py-4 px-3 text-sm text-gray-500">
+                      {skill.skill_id}
+                    </td>
+
+                    <td className="py-4 px-3">
+                      <span className="font-medium text-gray-900">
+                        {skill.skill_name}
+                      </span>
+                    </td>
+
+                    <td className="py-4 px-3">
+                      <span className="text-xs bg-violet-100 text-violet-700 px-2 py-1 rounded-full whitespace-nowrap">
+                        {skill.category_name}
+                      </span>
+                    </td>
+
+                    <td className="py-4 px-3">
+                      <div className="flex items-center gap-2">
+                        <button
+                          onClick={() => setSelectedSkill(skill)}
+                          title="View skill"
+                          className="p-2 hover:bg-violet-100 rounded-lg text-violet-600"
+                        >
+                          <Eye className="w-4 h-4" />
+                        </button>
+
+                        <button
+                          onClick={() => setEditingSkill({ ...skill })}
+                          title="Edit skill"
+                          className="p-2 hover:bg-blue-100 rounded-lg text-blue-600"
+                        >
+                          <Edit className="w-4 h-4" />
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
       </Card>
 
-      <Modal open={open} onClose={() => setOpen(false)} title="Add New AI Skill">
-        <div className="space-y-5">
-          <div><label className="nexora-label">Skill Name</label><input className="nexora-input" placeholder="e.g. Federated Learning" /></div>
-          <div><label className="nexora-label">Category</label><select className="nexora-input"><option>AI/ML</option><option>GenAI</option><option>Data</option><option>Infrastructure</option></select></div>
-          <div><label className="nexora-label">Description</label><textarea className="nexora-input h-24 resize-none" placeholder="Describe this skill..." /></div>
-          <div className="grid grid-cols-2 gap-4">
-            <div><label className="nexora-label">Demand Level</label><select className="nexora-input"><option>high</option><option>medium</option><option>low</option></select></div>
-            <div><label className="nexora-label">Average Rate ($/hr)</label><input type="number" className="nexora-input" placeholder="80" /></div>
+      {selectedSkill && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
+          <div className="bg-white rounded-xl shadow-xl w-full max-w-lg">
+            <div className="flex items-center justify-between p-5 border-b">
+              <div>
+                <h2 className="text-lg font-bold text-gray-900">
+                  Skill Details
+                </h2>
+                <p className="text-xs text-gray-500">
+                  Skill #{selectedSkill.skill_id}
+                </p>
+              </div>
+              <button
+                onClick={() => setSelectedSkill(null)}
+                className="p-2 hover:bg-gray-100 rounded-lg"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            <div className="p-5 space-y-4">
+              <div>
+                <p className="text-xs text-gray-500">Skill Name</p>
+                <p className="font-semibold text-gray-900">
+                  {selectedSkill.skill_name}
+                </p>
+              </div>
+
+              <div>
+                <p className="text-xs text-gray-500">Category</p>
+                <p className="font-medium text-gray-900">
+                  {selectedSkill.category_name}
+                </p>
+              </div>
+            </div>
+
+            <div className="p-5 border-t flex justify-end">
+              <button
+                onClick={() => setSelectedSkill(null)}
+                className="px-5 py-2 rounded-lg bg-gray-900 text-white text-sm hover:bg-gray-700"
+              >
+                Close
+              </button>
+            </div>
           </div>
-          <div className="flex gap-3"><button onClick={() => setOpen(false)} className="nexora-btn-secondary flex-1">Cancel</button><button onClick={() => setOpen(false)} className="nexora-btn-primary flex-1">Add Skill</button></div>
         </div>
-      </Modal>
+      )}
+
+      {editingSkill && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
+          <div className="bg-white rounded-xl shadow-xl w-full max-w-lg">
+            <div className="flex items-center justify-between p-5 border-b">
+              <h2 className="text-lg font-bold text-gray-900">Edit Skill</h2>
+              <button
+                onClick={() => setEditingSkill(null)}
+                className="p-2 hover:bg-gray-100 rounded-lg"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            <div className="p-5 space-y-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Skill Name
+                </label>
+                <input
+                  value={editingSkill.skill_name}
+                  maxLength={80}
+                  onChange={(e) =>
+                    setEditingSkill({
+                      ...editingSkill,
+                      skill_name: e.target.value,
+                    })
+                  }
+                  className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Category
+                </label>
+                <select
+                  value={editingSkill.category_id}
+                  onChange={(e) =>
+                    setEditingSkill({
+                      ...editingSkill,
+                      category_id: Number(e.target.value),
+                      category_name:
+                        categories.find(
+                          (category) =>
+                            category.category_id === Number(e.target.value)
+                        )?.category_name || "",
+                    })
+                  }
+                  className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm bg-white"
+                >
+                  {categories.map((category) => (
+                    <option
+                      key={category.category_id}
+                      value={category.category_id}
+                    >
+                      {category.category_name}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            </div>
+
+            <div className="p-5 border-t flex justify-end gap-3">
+              <button
+                onClick={() => setEditingSkill(null)}
+                disabled={saving}
+                className="px-4 py-2 rounded-lg border border-gray-200 text-sm"
+              >
+                Cancel
+              </button>
+
+              <button
+                onClick={saveSkill}
+                disabled={saving || !editingSkill.skill_name.trim()}
+                className="flex items-center gap-2 px-5 py-2 rounded-lg bg-violet-600 text-white text-sm hover:bg-violet-700 disabled:opacity-50"
+              >
+                {saving ? (
+                  <Loader2 className="w-4 h-4 animate-spin" />
+                ) : (
+                  <Save className="w-4 h-4" />
+                )}
+                Save Changes
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </DashboardLayout>
   );
 }

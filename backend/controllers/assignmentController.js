@@ -111,7 +111,61 @@ const acceptProposal = async (req, res) => {
         });
     }
 };
+// =====================================
+// GET FREELANCER ASSIGNMENTS
+// =====================================
 
+const getFreelancerAssignments = async (req, res) => {
+    try {
+        const freelancerId = req.user.userId;
+
+        if (req.user.role !== 'freelancer') {
+            return res.status(403).json({
+                message: 'Only freelancers can view their assignments.'
+            });
+        }
+
+        const request = new sql.Request();
+
+        request.input('freelancerId', sql.Int, freelancerId);
+
+        const result = await request.query(`
+            SELECT
+                pa.assignment_id,
+                pa.project_id,
+                pa.agreed_amount,
+                pa.start_date,
+                pa.end_date,
+                pa.progress_pct,
+                pa.status,
+                pr.title AS project_title,
+                pr.description,
+                pr.deadline,
+                c.contact_person AS client_name
+            FROM dbo.project_assignment pa
+            INNER JOIN dbo.project pr
+                ON pa.project_id = pr.project_id
+            INNER JOIN dbo.client c
+                ON pr.client_id = c.client_id
+            WHERE pa.freelancer_id = @freelancerId
+            ORDER BY pa.start_date DESC
+        `);
+
+        return res.status(200).json({
+            message: 'Freelancer assignments retrieved successfully!',
+            total: result.recordset.length,
+            assignments: result.recordset
+        });
+
+    } catch (error) {
+        console.error('Get freelancer assignments error:', error);
+
+        return res.status(500).json({
+            message: 'Failed to retrieve freelancer assignments.'
+        });
+    }
+};
 module.exports = {
-    acceptProposal
+    acceptProposal,
+    getFreelancerAssignments
 };

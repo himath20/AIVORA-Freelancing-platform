@@ -119,7 +119,57 @@ const getProjectProposals = async (req, res) => {
         });
     }
 };
+// =====================================
+// GET FREELANCER'S OWN PROPOSALS
+// =====================================
+
+const getFreelancerProposals = async (req, res) => {
+    try {
+        const freelancerId = req.user.userId;
+
+        if (req.user.role !== 'freelancer') {
+            return res.status(403).json({
+                message: 'Only freelancers can view their proposals.'
+            });
+        }
+
+        const request = new sql.Request();
+
+        request.input('freelancerId', sql.Int, freelancerId);
+
+        const result = await request.query(`
+            SELECT
+                p.proposal_id,
+                p.project_id,
+                p.cover_letter,
+                p.bid_amount,
+                p.estimated_days,
+                p.status,
+                p.submitted_at,
+                pr.title AS project_title
+            FROM dbo.proposal p
+            INNER JOIN dbo.project pr
+                ON p.project_id = pr.project_id
+            WHERE p.freelancer_id = @freelancerId
+            ORDER BY p.submitted_at DESC
+        `);
+
+        return res.status(200).json({
+            message: 'Freelancer proposals retrieved successfully!',
+            total: result.recordset.length,
+            proposals: result.recordset
+        });
+
+    } catch (error) {
+        console.error('Get freelancer proposals error:', error);
+
+        return res.status(500).json({
+            message: 'Failed to retrieve freelancer proposals.'
+        });
+    }
+};
 module.exports = {
     submitProposal,
-    getProjectProposals
+    getProjectProposals,
+    getFreelancerProposals
 };

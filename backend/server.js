@@ -1,3 +1,4 @@
+
 const express = require('express');
 const cors = require('cors');
 require('dotenv').config();
@@ -24,11 +25,21 @@ const paymentRoutes = require('./routes/paymentRoutes');
 const reviewRoutes = require('./routes/reviewRoutes');
 const complaintRoutes = require('./routes/complaintRoutes');
 const adminComplaintRoutes = require('./routes/adminComplaintRoutes');
+const adminFreelancerRoutes = require('./routes/adminFreelancerRoutes');
+const adminClientRoutes = require('./routes/adminClientRoutes');
+const adminProjectRoutes = require('./routes/adminProjectRoutes');
+const adminProposalRoutes = require('./routes/adminProposalRoutes');
+const adminServiceRoutes = require('./routes/adminServiceRoutes');
+const adminSkillRoutes = require('./routes/adminSkillRoutes');
+const adminPaymentRoutes = require('./routes/adminPaymentRoutes');
+const dashboardRoutes = require('./routes/dashboardRoutes');
+
 app.use(cors());
 app.use(express.json());
 
 // API routes
 app.use('/api', testRoutes);
+app.use('/api/dashboard', dashboardRoutes);
 app.use('/api/auth', authRoutes);
 app.use('/api/profile', profileRoutes);
 app.use('/api/services', serviceRoutes);
@@ -45,6 +56,14 @@ app.use('/api/payments', paymentRoutes);
 app.use('/api/reviews', reviewRoutes);
 app.use('/api/complaints', complaintRoutes);
 app.use('/api/admin/complaints', adminComplaintRoutes);
+app.use('/api/admin/freelancers', adminFreelancerRoutes);
+app.use('/api/admin/clients', adminClientRoutes);
+app.use('/api/admin/projects', adminProjectRoutes);
+app.use('/api/admin/proposals', adminProposalRoutes);
+app.use('/api/admin/services', adminServiceRoutes);
+app.use('/api/admin/skills', adminSkillRoutes);
+app.use('/api/admin/payments', adminPaymentRoutes);
+
 // Home route
 app.get('/', (req, res) => {
     res.send('AI Freelancing Platform API is running!');

@@ -1,4 +1,3 @@
-
 const { sql } = require('../config/db');
 
 // =====================================
@@ -168,11 +167,86 @@ const updateProject = async (req, res) => {
 
 
 // =====================================
+// BROWSE ALL OPEN PROJECTS (FREELANCERS)
+// =====================================
+
+const browseProjects = async (req, res) => {
+    try {
+        if (req.user.role !== 'freelancer') {
+            return res.status(403).json({
+                message: 'Only freelancers can browse projects.'
+            });
+        }
+
+        const request = new sql.Request();
+
+        const result = await request.query(`
+            SELECT
+                p.project_id,
+                p.title,
+                p.description,
+                p.budget_min,
+                p.budget_max,
+                p.deadline,
+                p.status,
+                p.posted_date,
+                s.service_name,
+                c.contact_person AS client_name,
+                (
+                    SELECT COUNT(*)
+                    FROM dbo.proposal pr
+                    WHERE pr.project_id = p.project_id
+                ) AS proposal_count
+            FROM dbo.project p
+            INNER JOIN dbo.ai_service s
+                ON p.service_id = s.service_id
+            INNER JOIN dbo.client c
+                ON p.client_id = c.client_id
+            WHERE p.status = 'OPEN'
+            ORDER BY p.posted_date DESC
+        `);
+
+        const skillsRequest = new sql.Request();
+
+        const skillsResult = await skillsRequest.query(`
+            SELECT
+                ps.project_id,
+                sk.skill_name
+            FROM dbo.project_skill ps
+            INNER JOIN dbo.skill sk
+                ON ps.skill_id = sk.skill_id
+        `);
+
+        const projects = result.recordset.map(project => ({
+            ...project,
+            required_skills: skillsResult.recordset
+                .filter(skill => skill.project_id === project.project_id)
+                .map(skill => skill.skill_name)
+        }));
+
+        return res.status(200).json({
+            message: 'Available projects retrieved successfully!',
+            total: projects.length,
+            projects
+        });
+
+    } catch (error) {
+        console.error('Browse projects error:', error);
+
+        return res.status(500).json({
+            message: 'Failed to retrieve available projects.'
+        });
+    }
+};
+
+
+// =====================================
 // EXPORT FUNCTIONS
 // =====================================
 
 module.exports = {
     createProject,
     getClientProjects,
-    updateProject
+    updateProject,
+    browseProjects
 };
